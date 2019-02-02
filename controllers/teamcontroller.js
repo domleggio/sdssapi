@@ -103,6 +103,19 @@ router.get('/:id', function (req, res) {
         }).populate('captain', 'name')
 });
 
+//Returns all teams by userID
+router.get('/:userID', function(req, res){
+    let userID = req.params.id;
+    let returnData = {};
+
+    Team.find()
+    {
+        
+    }
+})
+
+/
+
 
 
 // function getUserWithPosts(username){
