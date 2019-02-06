@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var auth = require('../config/auth');
 
 
 var Team = require('../models/team');
@@ -104,17 +105,18 @@ router.get('/:id', function (req, res) {
 });
 
 //Returns all teams by userID
-router.get('/:userID', function(req, res){
-    let userID = req.params.id;
-    let returnData = {};
+router.get('/view/myteams',auth, function(req, res){
+    let userID = req.payload._id;
+    console.log(userID);
 
-    Team.find()
+    Team.find(
     {
-        
-    }
-})
-
-/
+        players: userID
+    }, function(err, team){
+        if(err) return res.status(500).send("there was a problem finding the users teams");
+        res.status(200).send(team);
+    });
+});
 
 
 

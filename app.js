@@ -40,9 +40,6 @@ app.use('/league', LeagueController)
 var MatchController = require('./controllers/matchController');
 app.use('/match', MatchController);
 
-var MatchResultController = require('./controllers/matchResultController');
-app.use('/matchresult', MatchResultController);
-
 var AuthenticationController = require('./controllers/authenticationController');
 app.use('/api', AuthenticationController);
 

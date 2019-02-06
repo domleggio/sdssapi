@@ -61,6 +61,7 @@ router.post('/winner', function (req, res) {
 //Return all matches that a team plays in
 router.get('/:teamID', function (req, res) {
     let teamID = req.params.teamID;
+    console.log("being called");
 
     Match.find({
         teams: teamID
@@ -68,7 +69,7 @@ router.get('/:teamID', function (req, res) {
         if (err) return res.status(500).send("There was a problem finding the teams matches.");
         res.status(200).send(match);
     }).populate('teamID', 'name');
-    console.log("end");
+
 });
 
 
@@ -101,25 +102,42 @@ router.get('/wins/total/:teamID', function (req, res) {
     console.log("wins!");
 });
 
+//Return all matches that a team plays in
+// router.get('/:teamID', function (req, res) {
+//     let teamID = req.params.teamID;
+
+//     Match.find({
+//         teams: teamID
+//     }, function (err, match) {
+//         if (err) return res.status(500).send("There was a problem finding the teams matches.");
+//         res.status(200).send(match);
+//     }).populate('teamID', 'name');
+
+// });
+
+
+
 
 //Returns number of losses per a single team **THIS DOESNT WORK YET
 
 var getGames = function (teamID, callback) {
-    Match.count({
+    console.log("getGames");
+    Match.find({
         teams: teamID
-    }), function (err, games) {
+    }), function (err, totalGames) {
         if (err) return console.log("error finding games");
-        console.log(games);
-        callback(games);
+        console.log("mama");
+        callback(totalGames);
+        console.log("hlelo");
     }
 };
 
 var getWins = function (teamID, callback) {
+    console.log("getWins");
     Match.count({
         winner: teamID
     }, function (err, wins) {
         if (err) return console.log("error finding wins");
-        console.log(wins);
         callback(wins);
     })
 }
@@ -128,7 +146,6 @@ var getWins = function (teamID, callback) {
 
 router.get('/games/total/:teamID', function (req, res) {
     let teamID = req.params.teamID;
-    console.log("hi");
 
     getGames(teamID, function (totalGames) {
         getWins(teamID, function (totalWins) {

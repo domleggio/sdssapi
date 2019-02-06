@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var auth = require('../config/auth');
 
 
 var User = require('../models/user');
@@ -41,6 +42,22 @@ router.get('/:id', function(req, res)
         res.status(200).send(user);
     });
 });
+
+//GETS A SINGLE USER FROM THE DATABASE LUKE
+
+router.get('/profile/view',auth,function(req,res,next){
+
+    User.findOne({
+        _id: req.payload._id
+    }, function(err, user){
+        if(err) return res.status(500).send("there was an error finding the user.");
+        res.status(200).send(user);
+    })
+});
+
+
+
+
 
 //Deletes a single user from the database
 router.delete('/:id', function (req, res) 
