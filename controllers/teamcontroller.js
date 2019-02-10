@@ -5,6 +5,7 @@ var auth = require('../config/auth');
 
 var Team = require('../models/team');
 var User = require('../models/user');
+var Match = require('../models/match');
 
 
 //Creates a new team **WORKS
@@ -56,16 +57,6 @@ router.get('/', function (req, res) {
     });
 });
 
-//Gets a single team from the database
-// router.get('/:id', function(req, res)
-// {
-//     Team.findById(req.params.id, function(err, team) 
-//     {
-//         if (err) return res.status(500).send("There was a problem finding the team.");
-//         if(!team) return res.status(404).send("No team found.");
-//         res.status(200).send(team);
-//     });
-// });
 
 //Gets a single team name and ID from the database DOM FUNCTION
 
@@ -120,19 +111,6 @@ router.get('/view/myteams',auth, function(req, res){
 
 
 
-// function getUserWithPosts(username){
-//     return User.findOne({ username: username })
-//       .populate('posts').exec((err, posts) => {
-//         console.log("Populated User " + posts);
-//       })
-//   }
-
-
-
-
-
-
-
 
 //Deletes a single team from the database. Does not delete the users that were associated with the team. This works.
 router.delete('/:id', function (req, res) {
@@ -155,7 +133,25 @@ router.put('/:id', function (req, res) {
 
 
 
-//Gets team captain based on team ID
+
+
+//Gets a teams upcoming matches by their teamID
+router.get('/:teamID/upcomingGames', function(req, res){
+    let teamID= req.params.teamID;
+    let x = new Date(new Date().setDate(new Date().getDate()));
+    console.log("x = " + x);
+    
+    Match.find({
+        teams: teamID,
+        //startDate: {$lt: new Date()},
+        //startDate: {$gte: new Date(new Date().setDate(new Date().getDate()))},
+    }, function(err,match){
+        if(err) return res.status(500).send("There was a problem finding the teams upcoming games")
+        res.status(200).send(match);
+        console.log(Date());
+        
+    })
+})
 
 
 
