@@ -95,23 +95,24 @@ router.get('/:id', function (req, res) {
         }).populate('captain', 'name')
 });
 
-// //Returns all teams by userID
-// router.get('/view/myteams',auth, function(req, res){
-//     let userID = req.payload._id;
-//     console.log(userID);
-
-//     Team.find(
-//     {
-//         players: userID
-//     }, function(err, team){
-//         if(err) return res.status(500).send("there was a problem finding the users teams");
-//         res.status(200).send(team);
-//     });
-// });
 
 //Returns all teams by userID
-router.get('/view/myteams/:id', function(req, res){
-    let userID = req.params.id;
+router.get('/view/myteams/:userID', function(req, res){
+    let userID = req.params.userID;
+    console.log(userID);
+
+    Team.find(
+    {
+        players: userID
+    }, function(err, team){
+        if(err) return res.status(500).send("there was a problem finding the users teams");
+        res.status(200).send(team);
+    });
+});
+
+//Returns all teams by userID FROM TOKEN
+router.get('/team/team/profile', auth, function(req, res){
+    let userID = req.payload._id;
     console.log(userID);
 
     Team.find(

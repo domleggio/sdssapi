@@ -3,6 +3,7 @@ var router = express.Router();
 
 
 var Match = require('../models/match');
+var Team = require('../models/team');
 
 
 //Creates a new match
@@ -59,7 +60,7 @@ router.post('/winner', function (req, res) {
 });
 
 //Return all matches that a team plays in
-router.get('/:teamID', function (req, res) {
+router.get('/:teamID/upcomingGames', function (req, res) {
     let teamID = req.params.teamID;
     console.log("being called");
 
@@ -71,6 +72,52 @@ router.get('/:teamID', function (req, res) {
     }).populate('teamID', 'name');
 
 });
+
+
+//Return all upcoming matches per league
+
+
+router.get('/upcomingGames/:leagueID', function(req, res){
+    let leagueID = req.params.leagueID;
+    console.log("searching for matches by league");
+
+    Team.find({
+        leagueID: leagueID
+    }, function(err, team) {
+        if(err || !team){
+            res.send("Error!");
+            return;
+        }
+        console.log("teams = " + team);
+
+        var i;
+        var matchesArray= [];
+        var counter = 0;
+
+        for(i = 0; i<team.length; i++){
+            Match.find({
+                teams: team[i]._id
+            }, function(err, matches){
+                if(err){
+                    res.send("ERROR");
+                }
+                else{
+                    matchesArray.push(matches);
+                    console.log("matches at i= " + matchesArray[i]);
+                    counter++;
+                    if(counter >= team.length){
+                        console.log("if statement");
+                        res.json({
+                            matches: matchesArray
+                        })
+                    }
+                    
+                }
+            })          
+
+        }
+    })
+})
 
 
 
@@ -97,26 +144,12 @@ router.get('/wins/total/:teamID', function (req, res) {
         winner: teamID
     }, function (err, wins) {
         if (err) return res.status(500).send("There was a problem finding the wins");
-        res.sendStatus(200).send(wins);
+        res.json(wins);
         console.log(wins);
     });
 
     console.log("wins!");
 });
-
-//Return all matches that a team plays in
-// router.get('/:teamID', function (req, res) {
-//     let teamID = req.params.teamID;
-
-//     Match.find({
-//         teams: teamID
-//     }, function (err, match) {
-//         if (err) return res.status(500).send("There was a problem finding the teams matches.");
-//         res.status(200).send(match);
-//     }).populate('teamID', 'name');
-
-// });
-
 
 
 
@@ -124,14 +157,18 @@ router.get('/wins/total/:teamID', function (req, res) {
 
 var getGames = function (teamID, callback) {
     console.log("getGames");
-    Match.find({
-        teams: teamID
-    }), function (err, totalGames) {
-        if (err) return console.log("error finding games");
-        console.log("mama");
-        callback(totalGames);
+    Match.count({
+        winner: teamID
+    }, function (err, totalGames) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            callback(totalGames);
+        }
+
         console.log("hlelo");
-    }
+    })
 };
 
 var getWins = function (teamID, callback) {
@@ -144,15 +181,13 @@ var getWins = function (teamID, callback) {
     })
 }
 
-
-
 router.get('/games/total/:teamID', function (req, res) {
     let teamID = req.params.teamID;
 
     getGames(teamID, function (totalGames) {
         getWins(teamID, function (totalWins) {
             let loses = totalGames - totalWins;
-            res.send({
+            res.json({
                 total: totalGames,
                 wins: totalWins,
                 loses: loses
@@ -160,15 +195,6 @@ router.get('/games/total/:teamID', function (req, res) {
         })
     })
 });
-
-
-
-
-
-
-
-
-
 
 
 //Returns all the matches in the database
@@ -207,44 +233,3 @@ router.put('/:id', function (req, res) {
 
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-
-//this i dont need
-
-// //Creates a new player and returns the team the player was created for. Includes all players already assigned to the team.
-// router.post('/', function (req, res) {
-//     Player.create(
-//         {
-//             player_name: req.body.player_name,
-//         },
-//         function (err, player) {
-//             if (err) {
-//                 console.log(err);
-//                 return res.status(500).send("There was a problem adding the information to the database.");
-//             }
-//                 console.log(req.body.teamID);
-//                 console.log("hello");
-//                 //console.log(teamID);
-//                 //res.status(200).send(player);//return the player
-//                 let teamID = req.body.teamID;
-
-//                 //find team????
-
-//                 Team.findByIdAndUpdate(teamID, { $push: { players: player._id } }, { new: true }, function (err, team) {
-//                     if (err) return res.status(500).send("There was a problem updating the user.");
-//                     res.status(200).send(team);
-//                 });
-
-//         });
-
-//     //res.status(200).send(player);//return the player
-// });

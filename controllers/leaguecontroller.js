@@ -4,6 +4,7 @@ var router = express.Router();
 var auth = require('../config/auth');
 var League = require('../models/league');
 var Team = require('../models/team');
+var Match = require('../models/match');
 //var Player = require('./player');
 
 
@@ -32,7 +33,7 @@ router.post('/create', auth, function (req, res) {
                 res.status(200).send(league);
             });
     }
-    else{
+    else {
         return res.status(500).send("Unauthorized to perform this task")
     }
 
@@ -141,6 +142,168 @@ router.get('/team/:id', function (req, res) {
         })
 });
 
+
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+//GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
+
+// var getGames = function (teamID, callback) {
+//     console.log("getGames");
+//     Match.count({
+//         teams: teamID
+//     }, function (err, totalGames) {
+//         if (err) {
+//             console.log(err);
+//         }
+//         else {
+//             callback(totalGames);
+//         }
+//     })
+// };
+
+// var getWins = function (teamID, callback) {
+//     console.log("getWins");
+//     Match.count({
+//         winner: teamID
+//     }, function (err, wins) {
+//         if (err) return console.log("error finding wins");
+//         callback(wins);
+//     })
+// }
+
+router.get('/games/total/:teamID', function (req, res) {
+    let teamID = req.params.teamID;
+
+    getGames(teamID, function (totalGames) {
+        getWins(teamID, function (totalWins) {
+            let loses = totalGames - totalWins;
+            res.json({
+                total: totalGames,
+                wins: totalWins,
+                loses: loses
+            })
+        })
+    })
+});
+
+
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+//USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
+
+
+//LUKE AWAIT FUNCTION
+
+
+
+
+// router.get('/nowaythisworks/:id', async (req, res) =>{
+//     let leagueID = req.params.id
+
+//     //find teams
+//     let teams = await Team.find(
+//     {
+//       leagueID: leagueID
+//     }).then(async (allTeams) => {
+
+//       //the result of our database read
+
+
+//       return allTeams.toJSON(); // look up if this is right
+//     }).catch(async (err) => {
+//       //any errors that might have happened
+//       res.json({error:err});
+//       throw({error:err});
+//     });
+
+//     teams = await Promise.all(teams.map(async(team)=>{
+
+//       team.wins = await getWins(team._id);
+//       team.totalGames = await getGames(team._id);
+
+//       team.loses = team.totalGames - team.wins;
+
+//       return team;
+//     }));
+
+//     res.json(teams);
+
+//   });
+
+
+var getGames = function (team, callback) {
+    console.log("getGames");
+    Match.count({
+        teams: team._id
+    }, function (err, totalGames) {
+        if (err) {
+            console.log(err);
+        }
+        else {
+            team.totalGames = totalGames;
+            console.log("totalgames = " + team.totalGames);
+            return callback(team);
+        }
+    })
+};
+
+var getWins = function (team, callback) {
+    console.log("getWins");
+    Match.count({
+        winner: team._id
+    }, function (err, wins) {
+        if (err) return console.log("error finding wins");
+        team.wins = wins;
+        team.losses = team.totalGames - team.wins;
+        console.log("team wins = " + team.wins);
+        
+        return callback(team);
+    })
+}
+
+var getTotals = function (team, callback) {
+    getGames(team, function (teamWithGames) {
+        getWins(teamWithGames, function (teamWithWinsAndGames) {
+            return callback(teamWithWinsAndGames);
+        })
+    })
+}
+
+
+
+
+router.get('/nowaythisworks/:id', function (req, res) {
+    let leagueID = req.params.id
+    let returnObj = [];
+
+    Team.find({
+        leagueID: leagueID
+    }, function (err, teams) {
+        let counter = 0;
+
+        //make the team a JSON here???
+
+
+        for (let i = 0; i < teams.length; i++) {
+
+            getTotals(teams[i].toJSON(), function (team) {
+                returnObj.push(team);
+                counter++
+                if (counter >= teams.length) {
+                    res.json(returnObj);
+                }
+            })
+        }
+    })
+});
 
 
 

@@ -70,9 +70,9 @@ router.delete('/:id', function (req, res)
 });
 
 //Updates a single user in the database
-router.put('/:email', function (req, res) 
+router.put('/update', function (req, res) 
 {
-    User.findByIdAndUpdate(req.params.id, req.body, {new: true}, function(err, user)
+    User.findByIdAndUpdate(req.body._id, req.body, {new: false}, function(err, user)
     {
         if(err) return res.status(500).send("There was a problem updating the user.");
         res.status(200).send(user);

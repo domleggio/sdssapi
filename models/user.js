@@ -12,6 +12,7 @@ var UserSchema = new mongoose.Schema({
   sex:{type: String,required: true},
   phoneNumber:{type: String,required: true},
   role:{type: String, required: true},
+  GP:{type: String},
 });
 
 UserSchema.methods.setPassword = function(password){
