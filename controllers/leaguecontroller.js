@@ -142,6 +142,42 @@ router.get('/team/:id', function (req, res) {
         })
 });
 
+//Gets all matches with a specific leagueID
+router.get('/matches/:id', function (req, res) {
+    let leagueID = req.params.id;
+    let returnData = {};
+
+    //find teams
+    Team.find({
+        leagueID: leagueID
+    }, function (err, team) {
+        if (err || !team) {
+            res.send("error");
+            return;
+        }
+        console.log(team);
+
+        var i;
+        teamArray = [];
+
+        for (i = 0; i > teamArray.length; i++) {
+            Match.find({
+                teams: teamArray[i].id
+            }, function (err, matches) {
+                if (err) {
+                    res.send("major error");
+                }
+                else {
+                    console.log(matches);
+                }
+            })
+        }
+    })
+})
+
+
+
+
 
 //GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
 //GETS ALL TEAMS WITH A SPECIFIC LEAGUEID AND RETURNS THE WINS/LOSSES
@@ -176,20 +212,20 @@ router.get('/team/:id', function (req, res) {
 //     })
 // }
 
-router.get('/games/total/:teamID', function (req, res) {
-    let teamID = req.params.teamID;
+// router.get('/games/total/:teamID', function (req, res) {
+//     let teamID = req.params.teamID;
 
-    getGames(teamID, function (totalGames) {
-        getWins(teamID, function (totalWins) {
-            let loses = totalGames - totalWins;
-            res.json({
-                total: totalGames,
-                wins: totalWins,
-                loses: loses
-            })
-        })
-    })
-});
+//     getGames(teamID, function (totalGames) {
+//         getWins(teamID, function (totalWins) {
+//             let loses = totalGames - totalWins;
+//             res.json({
+//                 total: totalGames,
+//                 wins: totalWins,
+//                 loses: loses
+//             })
+//         })
+//     })
+// });
 
 
 //USE THE LEAGUE ID TO GET ALL THE TEAMS AND ALL THE WINS LOSSES OF THOSE TEAMS
@@ -264,7 +300,7 @@ var getWins = function (team, callback) {
         team.wins = wins;
         team.losses = team.totalGames - team.wins;
         console.log("team wins = " + team.wins);
-        
+
         return callback(team);
     })
 }
@@ -280,7 +316,7 @@ var getTotals = function (team, callback) {
 
 
 
-router.get('/nowaythisworks/:id', function (req, res) {
+router.get('/totalGames/:id', function (req, res) {
     let leagueID = req.params.id
     let returnObj = [];
 
@@ -304,6 +340,8 @@ router.get('/nowaythisworks/:id', function (req, res) {
         }
     })
 });
+
+
 
 
 

@@ -122,79 +122,7 @@ router.get('/upcomingGames/:leagueID', function(req, res){
 
 
 
-//Return all matches where team wins
 
-router.get('/wins/:teamID', function (req, res) {
-    let teamID = req.params.teamID;
-
-    Match.find({
-        winner: teamID
-    }, function (err, match) {
-        if (err) return res.status(500).send("There was a problem finding the wins");
-        res.status(200).send(match);
-    }).populate('teamID', 'name');
-});
-
-
-//Returns number of wins per team
-router.get('/wins/total/:teamID', function (req, res) {
-    let teamID = req.params.teamID;
-
-    Match.count({
-        winner: teamID
-    }, function (err, wins) {
-        if (err) return res.status(500).send("There was a problem finding the wins");
-        res.json(wins);
-        console.log(wins);
-    });
-
-    console.log("wins!");
-});
-
-
-
-//Returns number of losses per a single team **THIS DOESNT WORK YET
-
-var getGames = function (teamID, callback) {
-    console.log("getGames");
-    Match.count({
-        winner: teamID
-    }, function (err, totalGames) {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            callback(totalGames);
-        }
-
-        console.log("hlelo");
-    })
-};
-
-var getWins = function (teamID, callback) {
-    console.log("getWins");
-    Match.count({
-        winner: teamID
-    }, function (err, wins) {
-        if (err) return console.log("error finding wins");
-        callback(wins);
-    })
-}
-
-router.get('/games/total/:teamID', function (req, res) {
-    let teamID = req.params.teamID;
-
-    getGames(teamID, function (totalGames) {
-        getWins(teamID, function (totalWins) {
-            let loses = totalGames - totalWins;
-            res.json({
-                total: totalGames,
-                wins: totalWins,
-                loses: loses
-            })
-        })
-    })
-});
 
 
 //Returns all the matches in the database
